@@ -1,8 +1,8 @@
 const read_file = require('./filer').read_file;
 
 
-async function send_msg(message) {
-    let data = await read_file('./uploads/students.xlsx');
+async function send_msg(message, file) {
+    let data = await read_file(file);
     let reg;
     for (let i = 0; i < data.length; i++) {
         let t = message;
@@ -14,7 +14,7 @@ async function send_msg(message) {
     }
 }
 
-send_msg("{{name}} is from {{Class}} and is {{Age}} years old")
+module.exports.send_msg = send_msg
 
 
 
