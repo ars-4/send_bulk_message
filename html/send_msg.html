@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Message</title>
+</head>
+
+<style>
+    body {
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    table {
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+
+    .upper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .main {
+        display: block;
+        width: 100%;
+    }
+
+    .text {
+        padding: 15px;
+        border: 1px solid #242424;
+        border-radius: 14px;
+    }
+
+    #input {
+        padding: 10px;
+        background-color: #fff;
+        resize: none;
+        outline: none;
+        border: none;
+    }
+
+    button {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 15px;
+        padding-right: 15px;
+        margin: 4px;
+        border-radius: 4px;
+        border: 1px solid green;
+    }
+
+    #logs {
+        color: #fff;
+        padding: 30px;
+        overflow-y: scroll;
+        height: 250px;
+        max-height: 250px;
+        background-color: #242424;
+    }
+</style>
+
+<body>
+    <table>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="upper">
+                    <form method="post" action="/send" enctype="multipart/form-data" class="main">
+                        <div class="text">
+                            <textarea name="message" id="input" cols="30" rows="10" placeholder="Type your message.."></textarea>
+                            <span onclick="addVariable(event)">{{first_name}}</span>
+                            <span onclick="addVariable(event)">{{last_name}}</span>
+                            <span onclick="addVariable(event)">{{message}}</span>
+                        </div>
+                        <br>
+                        <button onclick="main()">Send</button>
+                        <span onclick="clear_logs()">Clear Logs</span>
+                    </form>
+                </div>
+            </td>
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td>
+                <div class="upper">
+                    <form action="/upload", method="post" enctype="multipart/form-data" class="main">
+                        <div class="text">
+                            <input type="file" name="uploaded_file">
+                            <select>
+                                <option value="">The number file</option>
+                                <option value="">Other number file</option>
+                                <option value="">One more file</option>
+                            </select>
+                        </div>
+                        <br>
+                        <button>Upload</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div id="logs">
+    </div>
+
+    <script>
+        const input = document.getElementById('input');
+        const logs = document.getElementById('logs');
+        let useful_data = [
+            [
+                "Ali",
+                "Akbar",
+                "Where were you?"
+            ],
+            [
+                "Khizyr",
+                "Khan",
+                "Whats Up"
+            ]
+        ]
+
+        let variables = [
+            "{{first_name}}",
+            "{{last_name}}",
+            "{{message}}",
+            "{{\n}}"
+        ]
+
+        function addVariable(e) {
+            input.value = input.value + " " + e.srcElement.innerText
+        }
+
+        function replaceVariables(data) {
+            let msg;
+            let registeries = [];
+            for (let i = 0; i < data.length; i++) {
+                reg = new RegExp(variables[i], '\g');
+                registeries.push(reg)
+            }
+            msg = input.value.replace(registeries[0], data[0]).replace(registeries[1], data[1]).replace(registeries[2], data[2]).replace(registeries[3], '\n')
+            return msg;
+        }
+
+        function main() {
+            for (let i = 0; i < useful_data.length; i++) {
+                let string = replaceVariables(useful_data[i])
+                add_log(string)
+            }
+        }
+
+        function add_log(msg) {
+            let p = document.createElement('p');
+            date = new Date()
+            time = date.getHours().toString() + ":" + date.getMinutes().toString() + ":" + date.getSeconds().toString()
+            p.innerHTML = time + " " + "Send" + " -> \n" + msg;
+            logs.appendChild(p);
+            p.scrollIntoView()
+        }
+
+        function clear_logs() {
+            logs.innerHTML = ""
+        }
+    </script>
+</body>
+
+</html>
