@@ -7,8 +7,10 @@ async function read_file(file_to_read) {
     let main_data = [];
     let data2 = [];
     main_data = await readXlsxFile(file_to_read).then((rows) => {
+        console.log("List of variables: ")
         for (let i = 0; i < rows[0].length; i++) {
             headers.push(rows[0][i])
+            console.log("{{"+ rows[0][i] +"}}")
         }
         for (let i = 0; i < headers.length; i++) {
             for (let j = 1; j < rows.length; j++) {

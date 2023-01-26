@@ -3,6 +3,7 @@ const path = require('path');
 const multer  = require('multer');
 const { send_msg } = require('./sender');
 const sender = require('./sender').send_msg;
+const read_file = require('./filer').read_file;
 const app = express();
 const router = express.Router();
 
@@ -27,6 +28,7 @@ app.get('/', router);
 
 app.post('/upload', upload.single('uploaded_file'), function (req, res, next) {
     uploaded_file_name = req.file.originalname;
+    read_file('./uploads/' + uploaded_file_name)
     console.log('Uploaded: ' + req.file.originalname + ' to uploads/');
     res.redirect('/');
   })

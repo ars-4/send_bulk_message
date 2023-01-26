@@ -1,3 +1,5 @@
 {
-    "main": {}
+    "defaults": {
+        "port": 3000
+    }
 }
