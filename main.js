@@ -1,7 +1,9 @@
 const server = require('./server');
-const filer = require('./filer');
+const conf = require('./configuration.json');
 
-server.listen(3000, () => {
-  console.log("App Listening on port 3000")
+
+let port = conf.defaults.port
+server.listen(port, () => {
+  console.log(`App Listening on port ${port}`)
 })
 
