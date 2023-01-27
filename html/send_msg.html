@@ -75,12 +75,16 @@
                     <form method="post" action="/send" enctype="multipart/form-data" class="main">
                         <div class="text">
                             <textarea name="message" id="input" cols="30" rows="10" placeholder="Type your message.."></textarea>
-                            <span onclick="addVariable(event)">{{first_name}}</span>
-                            <span onclick="addVariable(event)">{{last_name}}</span>
-                            <span onclick="addVariable(event)">{{message}}</span>
+                            <% for(var i=0; i < variables.length; i++) { %>
+                                <span onclick="addVariable(event)">{{<%= variables[i] %>}}</span>
+                             <% } %>
                         </div>
                         <br>
                         <button onclick="main()">Send</button>
+                        <select>
+                            <option value="wp">WP</option>
+                            <option value="twilio">Twilio</option>
+                        </select>
                         <span onclick="clear_logs()">Clear Logs</span>
                     </form>
                 </div>
@@ -106,51 +110,17 @@
     </table>
     <br>
     <div id="logs">
+        <% for(var i=0; i < logs.length; i++) { %>
+            <p>Message => <%= logs[i] %></p>
+         <% } %>
     </div>
 
     <script>
         const input = document.getElementById('input');
         const logs = document.getElementById('logs');
-        let useful_data = [
-            [
-                "Ali",
-                "Akbar",
-                "Where were you?"
-            ],
-            [
-                "Khizyr",
-                "Khan",
-                "Whats Up"
-            ]
-        ]
-
-        let variables = [
-            "{{first_name}}",
-            "{{last_name}}",
-            "{{message}}",
-            "{{\n}}"
-        ]
 
         function addVariable(e) {
             input.value = input.value + " " + e.srcElement.innerText
-        }
-
-        function replaceVariables(data) {
-            let msg;
-            let registeries = [];
-            for (let i = 0; i < data.length; i++) {
-                reg = new RegExp(variables[i], '\g');
-                registeries.push(reg)
-            }
-            msg = input.value.replace(registeries[0], data[0]).replace(registeries[1], data[1]).replace(registeries[2], data[2]).replace(registeries[3], '\n')
-            return msg;
-        }
-
-        function main() {
-            for (let i = 0; i < useful_data.length; i++) {
-                let string = replaceVariables(useful_data[i])
-                add_log(string)
-            }
         }
 
         function add_log(msg) {
