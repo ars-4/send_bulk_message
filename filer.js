@@ -10,7 +10,6 @@ async function read_file(file_to_read) {
         console.log("List of variables: ")
         for (let i = 0; i < rows[0].length; i++) {
             headers.push(rows[0][i])
-            console.log("{{"+ rows[0][i] +"}}")
         }
         for (let i = 0; i < headers.length; i++) {
             for (let j = 1; j < rows.length; j++) {
@@ -24,9 +23,9 @@ async function read_file(file_to_read) {
         }
         let obj = []
         let inner_array = []
-        for(let i = 1; i < rows.length; i++) {
+        for (let i = 1; i < rows.length; i++) {
             obj = []
-            for(let j = 0; j < rows[i].length; j++) {
+            for (let j = 0; j < rows[i].length; j++) {
                 inner_array = []
                 inner_array.push(rows[0][j])
                 inner_array.push(rows[i][j])
@@ -39,4 +38,15 @@ async function read_file(file_to_read) {
     return main_data
 }
 
+async function get_variables_from_file(file_to_read) {
+    let headers = [];
+    main_data = await readXlsxFile(file_to_read).then((rows) => {
+        for (let i = 0; i < rows[0].length; i++) {
+            headers.push(rows[0][i])
+        }
+    }).then( () => { return headers; })
+    return main_data
+}
+
 module.exports.read_file = read_file
+module.exports.get_variables_from_file = get_variables_from_file
