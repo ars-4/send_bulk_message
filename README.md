@@ -14,7 +14,7 @@
 -----------
 
 ### How to use:
-* First get a number and Api Key from `https://api.whatzapp.com` or `Twilio`.
+* First get a number and Api Key from `https://apiwhatzapp.com` or `Twilio`.
 * Simply open your browser and go to `http://localhost:3000`
 * First upload a `.xlsx` based file and then you will see `List Of Variables` in `console`.
 * Use any of the variable name as it is in the message template with your message and start sending messages.

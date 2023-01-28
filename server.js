@@ -3,6 +3,7 @@ const path = require('path');
 const multer = require('multer');
 const bodyParser = require('body-parser');
 const { send_msg } = require('./sender');
+const { error } = require('console');
 const sender = require('./sender').send_msg;
 const get_variables_from_file = require('./filer').get_variables_from_file;
 const app = express();
@@ -38,35 +39,44 @@ app.get('/', (req, res) => {
 
 // app.get('/', router);
 
-app.post('/upload', upload.single('uploaded_file'), function (req, res, next) {
-  uploaded_file_name = req.file.originalname;
-  variables_from_uploaded_file = [];
-  get_variables_from_file('./uploads/' + uploaded_file_name).then((data) => {
-    for (let i = 0; i < data.length; i++) {
-      variables_from_uploaded_file.push(data[i])
-    }
-  }).then(() => {
-    console.log('Uploaded: ' + req.file.originalname + ' to uploads/');
-    res.redirect('/');
-  })
+app.post('/upload', upload.single('uploaded_file'), function (req, res) {
+  if (req.file) {
+    uploaded_file_name = req.file.originalname;
+    variables_from_uploaded_file = [];
+    get_variables_from_file('./uploads/' + uploaded_file_name).then((data) => {
+      for (let i = 0; i < data.length; i++) {
+        variables_from_uploaded_file.push(data[i])
+      }
+    }).then(() => {
+      console.log('Uploaded: ' + req.file.originalname + ' to uploads/');
+      res.redirect('/');
+    })
+  }
+  else {
+    return res.redirect('/')
+  }
 })
 
 
 app.post('/send', upload.none(), (req, res) => {
-  let message = req.body['message']
-  let type = req.body['type']
-  console.log(type)
-  if (uploaded_file_name) {
-    sender(message, "./uploads/" + uploaded_file_name, type).then((data) => {
-      for (let i = 0; i < data.length; i++) {
-        logs.push(data[i])
-      }
-    }).then(() => {
-      res.redirect('/')
-    })
+  if (req.body['message'].length <= 0) {
+    res.redirect('/')
   }
   else {
-    res.redirect('/')
+    let message = req.body['message']
+    let type = req.body['type']
+    if (uploaded_file_name) {
+      sender(message, "./uploads/" + uploaded_file_name, type).then((data) => {
+        for (let i = 0; i < data.length; i++) {
+          logs.push(data[i])
+        }
+      }).then(() => {
+        res.redirect('/')
+      })
+    }
+    else {
+      res.redirect('/')
+    }
   }
 })
 

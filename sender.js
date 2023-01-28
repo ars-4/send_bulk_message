@@ -7,7 +7,8 @@ const fetch = require('node-fetch');
 function send_wp_message(msg, mobile) {
     let api_key = conf.defaults.seemalive.api_key;
     let url = `https://operator.apiwhatzapp.com/single.php?recipient=${mobile}&apikey=${api_key}&text=${msg}`
-    fetch(url);
+    // fetch(url);
+    console.log(url)
 }
 
 
@@ -32,27 +33,33 @@ async function send_msg(message, file, type) {
         let msg = message;
         let mobile = "";
         for (let j = 0; j < data[i].length; j++) {
-            if(data[i][j][0] === 'mobile') {
+            if (data[i][j][0] === 'mobile') {
                 mobile = data[i][j][1]
             }
             reg = RegExp("{{" + data[i][j][0] + "}}", '\g')
             msg = msg.replace(reg, data[i][j][1])
         }
-        if(type == 'twilio') {
-            message_data.push(msg)
-            send_twilio_message(msg)
-        }
-        else if(type == 'wp') {
-            message_data.push(msg)
-            send_wp_message(msg, mobile)
+        if (mobile === "") {
+            console.log("No Mobile")
         }
         else {
-            console.log("No such type")
-            break;
+            if (type == 'twilio') {
+                message_data.push(msg)
+                send_twilio_message(msg)
+            }
+            else if (type == 'wp') {
+                message_data.push(msg)
+                send_wp_message(msg, mobile)
+            }
+            else {
+                console.log("No such type")
+                break;
+            }
         }
     }
     return message_data;
 }
+
 
 module.exports.send_msg = send_msg
 
