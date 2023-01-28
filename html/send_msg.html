@@ -14,6 +14,7 @@
     body {
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
         overflow-x: hidden;
+        /* background: linear-gradient(to bottom right, #f44336, #fcb003); */
     }
 
     .upper {
@@ -36,7 +37,7 @@
 
     #input {
         padding: 10px;
-        background-color: #fff;
+        background-color: transparent;
         resize: none;
         outline: none;
         border: none;
@@ -59,7 +60,7 @@
     #logs {
         color: #fff;
         padding: 30px;
-        margin-right: -1%;
+        margin-right: -2%;
         overflow-y: scroll;
         height: 250px;
         max-height: 250px;
@@ -72,7 +73,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="upper">
-                <form method="post" action="/send" enctype="multipart/form-data" class="main">
+                <form id="send_message_form" method="post" action="/send" enctype="multipart/form-data" class="main">
                     <div class="text row">
                         <div class="col-md-6">
                             <textarea name="message" id="input" cols="30" rows="10"
@@ -93,7 +94,7 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <button class="btn btn-primary" onclick="main()">Send</button>
+                            <button class="btn btn-primary" onclick="check_msg(event)">Send</button>
                             <span class="btn btn-danger" onclick="clear_logs()">Clear Logs</span>
                         </div>
                     </div>
@@ -103,12 +104,12 @@
 
         <div class="col-md-6">
             <div class="upper">
-                <form action="/upload" , method="post" enctype="multipart/form-data" class="main">
+                <form id="file_upload_form" action="/upload" , method="post" enctype="multipart/form-data" class="main">
                     <div class="text">
                         <label for="id_uploaded_file">
                             <span class="btn btn-secondary" id="label_uploaded_file">Select File</span>
                         </label>
-                        <button class="btn btn-primary">Upload</button>
+                        <button class="btn btn-primary" onclick="check_file(event)">Upload</button>
                         <input type="file" hidden id="id_uploaded_file" onchange="alerter(event)" name="uploaded_file">
                     </div>
                 </form>
@@ -158,6 +159,26 @@
 
         function hide_flash() {
             flash.style.transform = "translateX(100%)";
+        }
+
+        function check_file(e) {
+            e.preventDefault();
+            if(document.getElementById('id_uploaded_file').files.length > 0) {
+                document.getElementById('file_upload_form').submit()
+            }
+            else {
+                show_flash("Error => File Missing", 'danger')
+            }
+        }
+
+        function check_msg(e) {
+            e.preventDefault()
+            if(input.value.length > 0) {
+                document.getElementById('send_message_form').submit()
+            }
+            else {
+                show_flash("Error => Message is empty", 'danger')
+            }
         }
 
         function add_log(msg) {
