@@ -40,6 +40,7 @@ app.get('/', (req, res) => {
 
 app.post('/upload', upload.single('uploaded_file'), function (req, res, next) {
   uploaded_file_name = req.file.originalname;
+  variables_from_uploaded_file = [];
   get_variables_from_file('./uploads/' + uploaded_file_name).then((data) => {
     for (let i = 0; i < data.length; i++) {
       variables_from_uploaded_file.push(data[i])
@@ -54,8 +55,9 @@ app.post('/upload', upload.single('uploaded_file'), function (req, res, next) {
 app.post('/send', upload.none(), (req, res) => {
   let message = req.body['message']
   let type = req.body['type']
+  console.log(type)
   if (uploaded_file_name) {
-    sender(message, "./uploads/" + uploaded_file_name, 'wp').then((data) => {
+    sender(message, "./uploads/" + uploaded_file_name, type).then((data) => {
       for (let i = 0; i < data.length; i++) {
         logs.push(data[i])
       }

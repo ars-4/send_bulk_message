@@ -6,22 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send Message</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 
 <style>
     body {
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
-
-    table {
-        margin-left: 5%;
-        margin-right: 5%;
+        overflow-x: hidden;
     }
 
     .upper {
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 20px;
     }
 
     .main {
@@ -31,8 +30,8 @@
 
     .text {
         padding: 15px;
-        border: 1px solid #242424;
         border-radius: 14px;
+        border: 1px solid #c3c3c3;
     }
 
     #input {
@@ -43,19 +42,24 @@
         border: none;
     }
 
-    button {
-        padding-top: 10px;
-        padding-bottom: 10px;
-        padding-left: 15px;
-        padding-right: 15px;
-        margin: 4px;
+    .flash {
+        border: none;
+        padding: 20px;
+        background-color: #FFCCCB;
         border-radius: 4px;
-        border: 1px solid green;
+        border-left: 3px solid #f44336;
+        transform: translateX(100%);
+        transition: 0.5s;
+    }
+
+    .var {
+        margin: 1%;
     }
 
     #logs {
         color: #fff;
         padding: 30px;
+        margin-right: -1%;
         overflow-y: scroll;
         height: 250px;
         max-height: 250px;
@@ -64,63 +68,96 @@
 </style>
 
 <body>
-    <table>
-        <tr>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>
-                <div class="upper">
-                    <form method="post" action="/send" enctype="multipart/form-data" class="main">
-                        <div class="text">
-                            <textarea name="message" id="input" cols="30" rows="10" placeholder="Type your message.."></textarea>
-                            <% for(var i=0; i < variables.length; i++) { %>
-                                <span onclick="addVariable(event)">{{<%= variables[i] %>}}</span>
-                             <% } %>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="upper">
+                <form method="post" action="/send" enctype="multipart/form-data" class="main">
+                    <div class="text row">
+                        <div class="col-md-6">
+                            <textarea name="message" id="input" cols="30" rows="10"
+                                placeholder="Type your message.."></textarea>
                         </div>
-                        <br>
-                        <button onclick="main()">Send</button>
-                        <select>
-                            <option value="wp">WP</option>
-                            <option value="twilio">Twilio</option>
-                        </select>
-                        <span onclick="clear_logs()">Clear Logs</span>
-                    </form>
-                </div>
-            </td>
-            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-            <td>
-                <div class="upper">
-                    <form action="/upload", method="post" enctype="multipart/form-data" class="main">
-                        <div class="text">
-                            <input type="file" name="uploaded_file">
-                            <select>
-                                <option value="">The number file</option>
-                                <option value="">Other number file</option>
-                                <option value="">One more file</option>
+                        <div class="col-md-6">
+                            <% for(var i=0; i < variables.length; i++) { %>
+                                <span class="btn btn-secondary var" onclick="addVariable(event)">{{<%= variables[i] %>}}</span>
+                                <% } %>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <select class="form-control" name="type">
+                                <option value="wp">Seemalive</option>
+                                <option value="twilio">Twilio</option>
                             </select>
                         </div>
-                        <br>
-                        <button>Upload</button>
-                    </form>
-                </div>
-            </td>
-        </tr>
-    </table>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" onclick="main()">Send</button>
+                            <span class="btn btn-danger" onclick="clear_logs()">Clear Logs</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="upper">
+                <form action="/upload" , method="post" enctype="multipart/form-data" class="main">
+                    <div class="text">
+                        <label for="id_uploaded_file">
+                            <span class="btn btn-secondary" id="label_uploaded_file">Select File</span>
+                        </label>
+                        <button class="btn btn-primary">Upload</button>
+                        <input type="file" hidden id="id_uploaded_file" onchange="alerter(event)" name="uploaded_file">
+                    </div>
+                </form>
+            </div>
+            <br>
+            <div class="flash" id="flash">
+                <p>Hello</p>
+            </div>
+        </div>
+    </div>
     <br>
     <div id="logs">
         <% for(var i=0; i < logs.length; i++) { %>
-            <p>Message => <%= logs[i] %></p>
-         <% } %>
+            <p>Message => <%= logs[i] %>
+            </p>
+            <% } %>
     </div>
 
     <script>
         const input = document.getElementById('input');
         const logs = document.getElementById('logs');
+        const label = document.getElementById('label_uploaded_file');
+        const flash = document.getElementById('flash');
 
         function addVariable(e) {
             input.value = input.value + " " + e.srcElement.innerText
+        }
+
+        function alerter(e) {
+            label.innerHTML = event.target.files[0].name;
+            show_flash("selected " + label.innerHTML, 'success');
+        }
+
+        function show_flash(text, type) {
+            flash.innerHTML = text;
+            flash.style.transform = "translateX(10%)";
+            if (type === 'danger') { 
+                flash.style.backgroundColor = "#FFCCCB";
+                flash.style.borderColor = 'red';
+            }
+            else {
+                flash.style.backgroundColor = "#90EE90";
+                flash.style.borderColor = 'green';
+            }
+            setTimeout(hide_flash, 3000);
+        }
+
+        function hide_flash() {
+            flash.style.transform = "translateX(100%)";
         }
 
         function add_log(msg) {

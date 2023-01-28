@@ -1,6 +1,9 @@
 {
     "defaults": {
         "port": 3000,
-        "twilio": {}
+        "twilio": {},
+        "seemalive": {
+            "api_key": ""
+        }
     }
 }
