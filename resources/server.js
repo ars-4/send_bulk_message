@@ -42,7 +42,7 @@ app.post('/upload', upload.single('uploaded_file'), function (req, res) {
   if (req.file) {
     uploaded_file_name = req.file.originalname;
     variables_from_uploaded_file = [];
-    get_variables_from_file('./uploads/' + uploaded_file_name).then((data) => {
+    get_variables_from_file(path.join(__dirname + '/uploads/' + uploaded_file_name)).then((data) => {
       for (let i = 0; i < data.length; i++) {
         variables_from_uploaded_file.push(data[i])
       }
@@ -65,7 +65,7 @@ app.post('/send', upload.none(), (req, res) => {
     let message = req.body['message']
     let type = req.body['type']
     if (uploaded_file_name) {
-      sender(message, "./uploads/" + uploaded_file_name, type).then((data) => {
+      sender(message, path.join(__dirname + '/uploads/' + uploaded_file_name), type).then((data) => {
         for (let i = 0; i < data.length; i++) {
           logs.push(data[i])
         }
