@@ -4,27 +4,6 @@ const conf = require('./configuration.json');
 const fetch = require('node-fetch');
 
 
-function send_wp_message(msg, mobile) {
-    let api_key = conf.defaults.seemalive.api_key;
-    let url = `https://operator.apiwhatzapp.com/single.php?recipient=${mobile}&apikey=${api_key}&text=${msg}`
-    // fetch(url);
-    console.log(url)
-}
-
-
-function send_twilio_message(msg) {
-    const accountSid = conf.defaults.twilio.ssid; // Your Account SID from www.twilio.com/console
-    const authToken = conf.defaults.twilio.token; // Your Auth Token from www.twilio.com/console
-    const client = require('twilio')(accountSid, authToken);
-    client.messages
-        .create({
-            body: msg,
-            to: '+923054307983', // Text this number
-            from: '+1 616 344 9405', // From a valid Twilio number
-        })
-        .then((message) => console.log(message.sid));
-}
-
 async function send_msg(message, file, type) {
     let message_data = [];
     let data = await read_file(file);
@@ -47,9 +26,13 @@ async function send_msg(message, file, type) {
                 message_data.push(msg)
                 send_twilio_message(msg)
             }
-            else if (type == 'wp') {
+            else if (type == 'seemalive') {
                 message_data.push(msg)
                 send_wp_message(msg, mobile)
+            }
+            else if(type == 'test') {
+                message_data.push(msg)
+                console.log(msg)
             }
             else {
                 console.log("No such type")
@@ -58,6 +41,27 @@ async function send_msg(message, file, type) {
         }
     }
     return message_data;
+}
+
+
+function send_wp_message(msg, mobile) {
+    let api_key = conf.defaults.seemalive.api_key;
+    let url = `https://operator.apiwhatzapp.com/single.php?recipient=${mobile}&apikey=${api_key}&text=${msg}`
+    fetch(url);
+}
+
+
+function send_twilio_message(msg) {
+    const accountSid = conf.defaults.twilio.ssid; // Your Account SID from www.twilio.com/console
+    const authToken = conf.defaults.twilio.token; // Your Auth Token from www.twilio.com/console
+    const client = require('twilio')(accountSid, authToken);
+    client.messages
+        .create({
+            body: msg,
+            to: '+923054307983', // Text this number
+            from: '+1 616 344 9405', // From a valid Twilio number
+        })
+        .then((message) => console.log(message.sid));
 }
 
 
