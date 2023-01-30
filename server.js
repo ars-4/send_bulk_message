@@ -2,16 +2,10 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const bodyParser = require('body-parser');
-const { send_msg } = require('./sender');
-const { error } = require('console');
 const sender = require('./sender').send_msg;
 const get_variables_from_file = require('./filer').get_variables_from_file;
 const app = express();
-const router = express.Router();
 
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.engine('html', require('ejs').renderFile);
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -22,10 +16,17 @@ const storage = multer.diskStorage({
   }
 });
 
+
 const upload = multer({ storage: storage });
 let uploaded_file_name;
 let variables_from_uploaded_file = [];
 let logs = [];
+
+
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.engine('html', require('ejs').renderFile);
+
 
 app.get('/', (req, res) => {
   let variables = variables_from_uploaded_file;
@@ -36,8 +37,6 @@ app.get('/', (req, res) => {
   res.render(path.join(__dirname + '/html/send_msg.html'), context)
 })
 
-
-// app.get('/', router);
 
 app.post('/upload', upload.single('uploaded_file'), function (req, res) {
   if (req.file) {
@@ -79,5 +78,6 @@ app.post('/send', upload.none(), (req, res) => {
     }
   }
 })
+
 
 module.exports = app;
