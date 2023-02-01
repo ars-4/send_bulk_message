@@ -72,7 +72,7 @@ function write_actual_data(data) {
     writeXlsxFile(data, {
         filePath: './resources/uploads/' + 'Output.xlsx'
     }).then(() => {
-        console.log("Done")
+        console.log("File Written Succesfully -> Uploads/Output.xlsx")
     })
 }
 

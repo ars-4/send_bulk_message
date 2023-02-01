@@ -64,8 +64,9 @@ app.post('/send', upload.none(), (req, res) => {
   else {
     let message = req.body['message']
     let type = req.body['type']
+    let country = req.body['country']
     if (uploaded_file_name) {
-      sender(message, path.join(__dirname + '/uploads/' + uploaded_file_name), type).then((data) => {
+      sender(message, path.join(__dirname + '/uploads/' + uploaded_file_name), type, country).then((data) => {
         for (let i = 0; i < data.length; i++) {
           logs.push(data[i])
         }

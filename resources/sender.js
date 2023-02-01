@@ -3,7 +3,9 @@ const twilio = require('twilio');
 const fetch = require('node-fetch');
 
 
-async function send_msg(message, file, type) {
+
+
+async function send_msg(message, file, type, country) {
     let message_data = [];
     let data = await filer.read_file(file);
     let reg;
@@ -12,13 +14,28 @@ async function send_msg(message, file, type) {
         let mobile = "";
         for (let j = 0; j < data[i].length; j++) {
             if (data[i][j][0] === 'mobile') {
-                mobile = data[i][j][1]
+                // mobile = data[i][j][1]
+                let string_mob = String(data[i][j][1])
+                if(string_mob.includes('(')) {
+                    data[i][j][1] = string_mob.replace('(', '').replace(')', '').replace(' ', '').replace('-', '')
+                 }
+                switch(country) {
+                    case 'none':
+                        data[i][j][1] = data[i][j][1]
+                        mobile = data[i][j][1]
+                        break;
+                    
+                    case 'us':
+                        data[i][j][1] = "+1" + String(data[i][j][1])
+                        mobile = data[i][j][1]
+                        break;
+                }
             }
             reg = RegExp("{{" + data[i][j][0] + "}}", '\g')
             msg = msg.replace(reg, data[i][j][1])
         }
-        if (mobile === "") {
-            message_data.push("No Mobile")
+        if (mobile === "" || mobile.length < 8) {
+            message_data.push("Invalid or Empty mobile")
         }
         else {
             if (type == 'twilio') {
