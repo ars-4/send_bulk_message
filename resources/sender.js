@@ -1,7 +1,7 @@
 const filer = require('./filer');
 const twilio = require('twilio');
 const fetch = require('node-fetch');
-
+const nodemailer = require('nodemailer');
 
 
 
@@ -16,15 +16,15 @@ async function send_msg(message, file, type, country) {
             if (data[i][j][0] === 'mobile') {
                 // mobile = data[i][j][1]
                 let string_mob = String(data[i][j][1])
-                if(string_mob.includes('(')) {
+                if (string_mob.includes('(')) {
                     data[i][j][1] = string_mob.replace('(', '').replace(')', '').replace(' ', '').replace('-', '')
-                 }
-                switch(country) {
+                }
+                switch (country) {
                     case 'none':
                         data[i][j][1] = data[i][j][1]
                         mobile = data[i][j][1]
                         break;
-                    
+
                     case 'us':
                         data[i][j][1] = "+1" + String(data[i][j][1])
                         mobile = data[i][j][1]
@@ -46,10 +46,10 @@ async function send_msg(message, file, type, country) {
                 message_data.push(msg)
                 send_wp_message(msg, mobile)
             }
-            else if(type == 'write_file') {
+            else if (type == 'write_file') {
                 message_data.push(msg)
             }
-            else if(type == 'test') {
+            else if (type == 'test') {
                 message_data.push(msg)
             }
             else {
@@ -84,7 +84,48 @@ function send_twilio_message(msg) {
 }
 
 
+const transport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.email_user,
+        pass: process.env.email_pass
+    }
+})
+async function send_email(msg, file, type) {
+    console.log("Sending Email")
+    let data = await filer.read_file(file);
+    console.log(data)
+    let message_data = [];
+    for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].length; j++) {
+            reg = RegExp("{{" + data[i][j][0] + "}}", '\g')
+            msg = msg.replace(reg, data[i][j][1])
+            if (data[i][j][0] === 'email') {
+                mail(msg, process.env.email_user, data[i][j][1])
+            }
+        }
+    }
+    filer.write_file(data, message_data)
+    return message_data;
+}
+function mail(msg, sender, receiver) {
+    transport.sendMail({
+        from: sender,
+        to: receiver,
+        subject: process.env.email_subject,
+        html: msg
+    }, function (error, info) {
+        if (error) {
+            // message_data.push(error.message);
+        } else {
+            // message_data.push(info.response);
+        }
+    });
+}
+
+
 module.exports.send_msg = send_msg
+module.exports.send_email = send_email
 
 
 

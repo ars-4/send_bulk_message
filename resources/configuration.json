@@ -8,6 +8,11 @@
         },
         "seemalive": {
             "api_key": ""
+        },
+        "email": {
+            "user": "ars7.dev@gmail.com",
+            "pass": "kbawrcicgpwgocwy",
+            "subject": "Testing with text"
         }
     }
 }

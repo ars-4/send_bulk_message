@@ -19,3 +19,8 @@
 * First upload a `.xlsx` based file and then you will see `List Of Variables` in `console`.
 * Use any of the variable name as it is in the message template with your message and start sending messages.
 
+-----------
+
+### For Email:
+* First go to https://myaccount.google.com/u/4/apppasswords and generate a password for your gmail account.
+* Then simply put your Email and password in `configuration.json` file along with the email subject.

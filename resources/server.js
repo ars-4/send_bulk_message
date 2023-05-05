@@ -3,6 +3,7 @@ const path = require('path');
 const multer = require('multer');
 const bodyParser = require('body-parser');
 const sender = require('./sender').send_msg;
+const send_email = require('./sender').send_email;
 const get_variables_from_file = require('./filer').get_variables_from_file;
 const app = express();
 
@@ -67,6 +68,30 @@ app.post('/send', upload.none(), (req, res) => {
     let country = req.body['country']
     if (uploaded_file_name) {
       sender(message, path.join(__dirname + '/uploads/' + uploaded_file_name), type, country).then((data) => {
+        for (let i = 0; i < data.length; i++) {
+          logs.push(data[i])
+        }
+      }).then(() => {
+        res.redirect('/')
+      })
+    }
+    else {
+      res.redirect('/')
+    }
+  }
+})
+
+
+app.post('/send_email', upload.none(), (req, res) => {
+  if (req.body['message'].length <= 0) {
+    res.redirect('/')
+  }
+  else {
+    let message = req.body['message']
+    // let type = req.body['type']
+    // let country = req.body['country']
+    if (uploaded_file_name) {
+      send_email(message, path.join(__dirname + '/uploads/' + uploaded_file_name)).then((data) => {
         for (let i = 0; i < data.length; i++) {
           logs.push(data[i])
         }
