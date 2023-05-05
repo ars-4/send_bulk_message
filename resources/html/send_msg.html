@@ -87,14 +87,14 @@
                     </div>
                     <br>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <select name="country" class="form-control">
-                                <option value="none">Do not add code</option>
-                                <option value="us">United States (+1)</option>
-                                <option value="pk">Pakistan (+92)</option>
+                                <option value="none">None</option>
+                                <option value="us">US (+1)</option>
+                                <option value="pk">PK (+92)</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <select class="form-control" name="type">
                                 <option value="test">Test</option>
                                 <option value="write_file">Write File</option>
@@ -102,8 +102,9 @@
                                 <option value="twilio">Twilio</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-primary" onclick="check_msg(event)">Send</button>
+                        <div class="col-md-8">
+                            <button class="btn btn-primary" onclick="check_msg(event, 'sms')">Send SMS</button>
+                            <button class="btn btn-primary" onclick="check_msg(event, 'email')">Send Email</button>
                             <span class="btn btn-danger" onclick="clear_logs()">Clear Logs</span>
                         </div>
                     </div>
@@ -180,15 +181,24 @@
             }
         }
 
-        function check_msg(e) {
+        function check_msg(e, type) {
             e.preventDefault()
+            alert(input.value.length)
+            let form = document.getElementById('send_message_form')
             if(input.value.length > 0) {
-                document.getElementById('send_message_form').submit()
+                if(type === 'email') {
+                    form.action = '/send_email'
+                }
+                else {
+                    form.action = '/send'
+                }
+                form.submit()
             }
             else {
                 show_flash("Error => Message is empty", 'danger')
             }
         }
+        
 
         function add_log(msg) {
             let p = document.createElement('p');
